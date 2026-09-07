@@ -1,0 +1,12 @@
+{
+  "name": "sql-lab",
+  "version": "1.0.0",
+  "description": "Interactive SQL learning platform that runs entirely in the browser (SQLite WASM). Static hosting / GitHub Pages ready.",
+  "private": true,
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "test": "echo 'Open tests/test.html in a browser over http:// to run the smoke tests.'"
+  },
+  "keywords": ["sql", "sqlite", "sql.js", "wasm", "learning", "practice", "github-pages", "static-site"],
+  "license": "MIT"
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SQL Lab — self tests</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+<style>
+  body { font-family: Consolas, monospace; background: #0d1117; color: #e6edf3; padding: 20px; }
+  .pass { color: #3fb950; } .fail { color: #f85149; }
+  pre { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>SQL Lab self-tests</h1>
+<pre id="out">Running…</pre>
+<script type="module">
+const out = [];
+let passed = 0, failed = 0;
+function t(name, fn) {
+  try { fn(); out.push(`✓ ${name}`); passed++; }
+  catch (e) { out.push(`✕ ${name}\n   ${e.message}`); failed++; }
+}
+function eq(a, b, msg) { if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${msg || 'not equal'}: ${JSON.stringify(a)} vs ${JSON.stringify(b)}`); }
+
+const { DATABASES } = await import('../src/data/databases.js');
+const { compareResults, explainError } = await import('../src/validation/validator.js');
+const { CHALLENGES } = await import('../src/challenges/index.js');
+const { LESSONS } = await import('../src/lessons/lessons.js');
+const { CHEATSHEET } = await import('../src/cheatsheet/cheatsheet.js');
+const { getProgress, recordAttempt, resetProgress } = await import('../src/progress/progress.js');
+
+// Static data checks
+t('there are 30 challenges', () => eq(CHALLENGES.length, 30));
+t('challenge ids unique', () => eq(new Set(CHALLENGES.map(c => c.id)).size, 30));
+t('every challenge has 3 hints + solution', () => {
+  for (const c of CHALLENGES) {
+    if (c.hints.length < 1) throw new Error(c.id + ' no hints');
+    if (!c.solution) throw new Error(c.id + ' no solution');
+    if (!c.db) throw new Error(c.id + ' no db');
+  }
+});
+t('10 lessons exist', () => eq(LESSONS.length >= 10, true));
+t('cheatsheet has 25+ entries', () => eq(CHEATSHEET.length >= 25, true));
+
+// SQL engine tests
+const SQL = await initSqlJs({ locateFile: (f) => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/' + f });
+let db;
+t('company_db schema executes', () => {
+  db = new SQL.Database();
+  db.exec(DATABASES[0].schema);
+  const r = db.exec("SELECT COUNT(*) FROM employees");
+  eq(r[0].values[0][0] > 5, true);
+});
+t('SELECT works', () => eq(db.exec("SELECT first_name FROM employees WHERE employee_id=1")[0].values[0][0], 'John'));
+t('GROUP BY works', () => eq(db.exec("SELECT COUNT(*) FROM employees GROUP BY department_id")[0].values.length > 1, true));
+t('JOIN works', () => eq(db.exec("SELECT d.name FROM employees e JOIN departments d ON e.department_id=d.department_id WHERE e.employee_id=2")[0].values[0][0], 'Engineering'));
+t('aggregate works', () => eq(db.exec("SELECT ROUND(AVG(salary)) FROM employees")[0].values[0][0] > 50000, true));
+t('invalid SQL throws', () => {
+  let threw = false;
+  try { db.exec("SELEC * FROM employees"); } catch { threw = true; }
+  eq(threw, true);
+});
+t('other DB schemas execute', () => {
+  for (const d of DATABASES.slice(1)) {
+    const x = new SQL.Database();
+    x.exec(d.schema);
+    x.close();
+  }
+});
+
+// Validation tests
+const R = (columns, rows) => [{ columns, rows }];
+t('identical results pass', () => eq(compareResults(R(['a','b'], [[1,2]]), R(['x','y'], [[1,2]])).pass, true));
+t('row order ignored when not ordered', () => eq(compareResults(R(['a'], [[1],[2]]), R(['a'], [[2],[1]])).pass, true));
+t('row order matters when ordered', () => eq(compareResults(R(['a'], [[1],[2]]), R(['a'], [[2],[1]]), { ordered: true }).pass, false));
+t('wrong row count fails', () => eq(compareResults(R(['a'], [[1]]), R(['a'], [[1],[2]])).pass, false));
+t('wrong column count fails', () => eq(compareResults(R(['a'], [[1]]), R(['a','b'], [[1,2]])).pass, false));
+t('NULL vs null equal', () => eq(compareResults(R(['a'], [[null]]), R(['a'], [[null]])).pass, true));
+t('explainError translates no such column', () => eq(explainError('no such column: salery').includes('does not exist'), true));
+
+// Progress tests (localStorage-backed)
+t('recordAttempt grants XP + completes', () => {
+  resetProgress();
+  const rec = recordAttempt(CHALLENGES[0], 'correct', 0);
+  eq(rec.newlyCompleted, true);
+  eq(getProgress().xp > 0, true);
+});
+t('duplicate completion gives no new XP', () => {
+  const rec = recordAttempt(CHALLENGES[0], 'correct', 0);
+  eq(rec.newlyCompleted, false);
+});
+t('incorrect attempt resets streak', () => {
+  recordAttempt(CHALLENGES[1], 'incorrect', 0);
+  eq(getProgress().streak, 0);
+});
+
+// Every challenge solution must execute against its database and self-validate
+const dbs = {};
+for (const d of DATABASES) { const x = new SQL.Database(); x.exec(d.schema); dbs[d.id] = x; }
+let solFails = [];
+for (const c of CHALLENGES) {
+  try {
+    const r = dbs[c.db].exec(c.solution);
+    const sol = r.length ? R(r[0].columns, r[0].values) : [];
+    const cmp = compareResults(sol, sol, { ordered: !!c.ordered });
+    if (!cmp.pass) solFails.push(c.id + ' self-compare');
+  } catch (e) { solFails.push(`${c.id}: ${e.message}`); }
+}
+t('all 30 challenge solutions execute and self-validate', () => eq(solFails, []));
+
+
+document.getElementById('out').textContent =
+  out.join('\n') + `\n\n${passed} passed, ${failed} failed`;
+</script>
+</body>
+</html>

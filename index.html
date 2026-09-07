@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SQL Lab — Learn SQL by writing real queries against interactive in-browser databases. No server required.">
+<title>SQL Lab — Learn • Practice • Challenges • Cheat Sheet</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗄️</text></svg>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<header class="topbar">
+  <div class="topbar-brand">
+    <span class="logo" aria-hidden="true">⬢</span>
+    <div>
+      <h1>SQL LAB</h1>
+      <p class="tagline">Learn • Practice • Challenges • Cheat Sheet</p>
+    </div>
+  </div>
+  <nav class="topnav" aria-label="Main navigation">
+    <button class="nav-btn" data-view="welcome">Home</button>
+    <button class="nav-btn" data-view="learn">Learn</button>
+    <button class="nav-btn" data-view="practice">Practice</button>
+    <button class="nav-btn" data-view="challenges">Challenges</button>
+    <button class="nav-btn" data-view="cheatsheet">Cheat Sheet</button>
+    <button class="nav-btn" data-view="progress">Progress</button>
+  </nav>
+  <div class="topbar-actions">
+    <button id="themeToggle" class="icon-btn" aria-label="Toggle dark or light mode" title="Toggle theme">🌙</button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================= WELCOME ================= -->
+  <section id="view-welcome" class="view" hidden>
+    <div class="hero">
+      <div class="hero-badge">100% in your browser — no server, no signup</div>
+      <h2>Welcome to <span class="accent">SQL Lab</span></h2>
+      <p class="hero-sub">Learn SQL by writing real queries against interactive databases.<br>
+      Write → Run → See results instantly. From your first <code>SELECT</code> to window functions.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" data-go="learn">📚 Start Learning</button>
+        <button class="btn btn-primary btn-lg" data-go="practice">🧪 Practice SQL</button>
+        <button class="btn btn-secondary btn-lg" data-go="challenges">🏆 Challenges</button>
+        <button class="btn btn-secondary btn-lg" data-go="cheatsheet">📖 Cheat Sheet</button>
+      </div>
+      <div class="hero-path">
+        <h3>Your learning path</h3>
+        <ol class="path-steps">
+          <li><button data-go="learn" data-topic="select">SELECT</button></li>
+          <li><button data-go="learn" data-topic="where">WHERE</button></li>
+          <li><button data-go="learn" data-topic="orderby">ORDER BY</button></li>
+          <li><button data-go="learn" data-topic="groupby">GROUP BY</button></li>
+          <li><button data-go="learn" data-topic="join">JOIN</button></li>
+          <li><button data-go="learn" data-topic="advanced">Advanced SQL</button></li>
+        </ol>
+      </div>
+      <div id="hero-progress" class="hero-progress"></div>
+    </div>
+  </section>
+
+  <!-- ================= LEARN ================= -->
+  <section id="view-learn" class="view" hidden>
+    <aside class="side-list" aria-label="Lesson topics">
+      <h3>Topics</h3>
+      <ul id="lessonList"></ul>
+    </aside>
+    <div class="lesson-content">
+      <div id="lessonBody"></div>
+    </div>
+  </section>
+
+
+  <!-- ================= CHALLENGES ================= -->
+  <section id="view-challenges" class="view" hidden>
+    <div class="challenges-head">
+      <h2>SQL Challenges</h2>
+      <div class="level-tabs" role="tablist" aria-label="Difficulty levels">
+        <button class="level-tab active" data-level="all" role="tab">All</button>
+        <button class="level-tab" data-level="beginner" role="tab">🟢 Beginner</button>
+        <button class="level-tab" data-level="intermediate" role="tab">🟡 Intermediate</button>
+        <button class="level-tab" data-level="advanced" role="tab">🔴 Advanced</button>
+      </div>
+    </div>
+    <div id="challengeGrid" class="challenge-grid"></div>
+  </section>
+
+  <!-- ================= PRACTICE WORKSPACE (3 panels) ================= -->
+  <section id="view-practice" class="view view-workspace" hidden>
+    <div id="challengeBanner" class="challenge-banner" hidden>
+      <div class="cb-info">
+        <span id="cbLevel" class="cb-level"></span>
+        <strong id="cbTitle"></strong>
+        <span id="cbStatus" class="cb-status"></span>
+      </div>
+      <div class="cb-desc" id="cbDesc"></div>
+      <div class="cb-btns">
+        <button class="btn btn-sm btn-secondary" id="btnHint">💡 Hint</button>
+        <button class="btn btn-sm btn-secondary" id="btnSolution">👁 Solution</button>
+        <button class="btn btn-sm btn-secondary" id="btnChallengeList">✕ Close</button>
+      </div>
+      <div id="hintBox" class="hint-box" hidden></div>
+    </div>
+    <div class="workspace" id="workspace">
+      <!-- PANEL 1: DATABASE -->
+      <div class="panel panel-db" id="panelDb">
+        <div class="panel-head">
+          <h2>🗄️ Database</h2>
+          <div class="panel-head-actions">
+            <label class="visually-hidden" for="dbSelect">Select database</label>
+            <select id="dbSelect" aria-label="Select database"></select>
+            <button class="btn btn-sm btn-ghost" id="btnResetDb" title="Reset database to original sample data">↺ Reset DB</button>
+          </div>
+        </div>
+        <div class="db-tree" id="dbTree" role="tree" aria-label="Database tables"></div>
+        <div class="db-inspect" id="dbInspect" aria-live="polite"></div>
+      </div>
+
+      <!-- PANEL 2: EDITOR -->
+      <div class="panel panel-editor" id="panelEditor">
+        <div class="panel-head">
+          <h2>⌨️ SQL Editor</h2>
+          <div class="panel-head-actions">
+            <button class="btn btn-sm btn-ghost" id="btnClear" title="Clear editor">Clear</button>
+            <button class="btn btn-sm btn-ghost" id="btnResetQuery" title="Reset to starter query">Reset</button>
+            <button class="btn btn-sm btn-primary" id="btnHistory" title="Query history">🕘 History</button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <textarea id="sqlInput" aria-label="SQL query editor"></textarea>
+        </div>
+        <div class="editor-actions">
+          <button class="btn btn-primary btn-run" id="btnRun" title="Run query (Ctrl+Enter)">▶ Run Query</button>
+          <span class="editor-status" id="editorStatus" aria-live="polite">Ready</span>
+        </div>
+        <div id="historyPanel" class="history-panel" hidden>
+          <div class="history-head">
+            <h3>Query History</h3>
+            <div>
+              <button class="btn btn-sm btn-ghost" id="btnHistoryClear">Clear all</button>
+              <button class="btn btn-sm btn-ghost" id="btnHistoryClose">✕</button>
+            </div>
+          </div>
+          <ul id="historyList" class="history-list"></ul>
+        </div>
+      </div>
+
+      <!-- PANEL 3: RESULT -->
+      <div class="panel panel-result" id="panelResult">
+        <div class="panel-head">
+          <h2>📊 Result</h2>
+          <span class="panel-head-actions" id="resultMeta"></span>
+        </div>
+        <div class="result-body" id="resultBody" aria-live="polite">
+          <p class="muted">Run a query to see results here. Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to execute.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CHEAT SHEET ================= -->
+  <section id="view-cheatsheet" class="view" hidden>
+    <div class="cheatsheet-layout">
+      <aside class="side-list" aria-label="Cheat sheet categories">
+        <h3>Categories</h3>
+        <ul id="cheatNav"></ul>
+      </aside>
+      <div id="cheatBody" class="cheat-body"></div>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESS ================= -->
+  <section id="view-progress" class="view" hidden>
+    <div id="progressBody"></div>
+  </section>
+</main>
+
+<!-- Modals / toasts -->
+<div id="modalRoot"></div>
+<div id="toastRoot" class="toast-root" aria-live="polite"></div>
+
+<!-- SQL engine: sql.js (SQLite WASM) + CodeMirror -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/sql-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
