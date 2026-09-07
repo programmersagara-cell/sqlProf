@@ -277,7 +277,9 @@ main { padding: 18px; }
 .side-btn.active { background: var(--panel-2); border-color: var(--border); color: var(--accent-2); font-weight: 600; }
 .side-btn.sub { padding-left: 18px; font-size: 0.88em; }
 .side-cat { font-size: 0.72em; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 10px 0 4px; }
-#view-learn, #view-cheatsheet { display: flex; gap: 14px; align-items: flex-start; max-width: 1200px; margin: 0 auto; }
+#view-learn, #view-cheatsheet { display: block; max-width: 1200px; margin: 0 auto; }
+#view-learn { display: flex; gap: 14px; align-items: flex-start; }
+.cheatsheet-layout { display: flex; gap: 14px; align-items: flex-start; }
 #view-learn[hidden], #view-cheatsheet[hidden] { display: none; }
 .lesson-content, .cheat-body { flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 26px; overflow: auto; max-height: calc(100vh - 130px); }
 .code-block { background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow: auto; }
@@ -365,7 +367,7 @@ main { padding: 18px; }
 @media (max-width: 760px) {
   .workspace { grid-template-columns: 1fr; }
   .panel-db, .panel-result { grid-column: auto; max-height: 340px; }
-  #view-learn, #view-cheatsheet { flex-direction: column; }
+  #view-learn, .cheatsheet-layout { flex-direction: column; }
   .side-list { width: 100%; }
   .lesson-content, .cheat-body { max-height: none; }
   .topnav { margin-left: 0; width: 100%; order: 3; }
