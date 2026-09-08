@@ -15,10 +15,14 @@
 
 <header class="topbar">
   <div class="topbar-brand">
-    <span class="logo" aria-hidden="true">⬢</span>
+    <svg class="logo" width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="29" height="29" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <path d="M8 11l6 5-6 5" fill="none" stroke="var(--signal)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="16" y1="22" x2="24" y2="22" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
     <div>
-      <h1>SQL LAB</h1>
-      <p class="tagline">Learn • Practice • Challenges • Cheat Sheet</p>
+      <h1>SQL·LAB</h1>
+      <p class="tagline">the in-browser query workbench</p>
     </div>
   </div>
   <nav class="topnav" aria-label="Main navigation">
@@ -39,25 +43,37 @@
   <!-- ================= WELCOME ================= -->
   <section id="view-welcome" class="view" hidden>
     <div class="hero">
-      <div class="hero-badge">100% in your browser — no server, no signup</div>
-      <h2>Welcome to <span class="accent">SQL Lab</span></h2>
-      <p class="hero-sub">Learn SQL by writing real queries against interactive databases.<br>
-      Write → Run → See results instantly. From your first <code>SELECT</code> to window functions.</p>
+      <div class="hero-console" role="img" aria-label="Example of running a SQL query">
+        <div class="console-bar"><span class="console-dot"></span><span class="console-dot"></span><span class="console-dot"></span><span class="console-title">session · company_db</span><span class="console-live">● live</span></div>
+        <pre class="console-body"><span class="c-prompt">lab&gt;</span> <span class="c-sql">SELECT first_name, salary
+FROM   employees
+WHERE  salary &gt; 60000;</span>
+<span class="c-ok">✓ 3 rows · 1.8 ms</span>
+
+ <span class="c-col">first_name</span>  <span class="c-col">salary</span>
+ <span class="c-val">Sarah</span>           <span class="c-num">61000</span>
+ <span class="c-val">Robert</span>          <span class="c-num">67000</span>
+ <span class="c-val">Linda</span>           <span class="c-num">72000</span></pre>
+      </div>
+      <h2>Every query runs on <span class="accent">your machine</span>.</h2>
+      <p class="hero-sub">A real SQLite engine compiled to WebAssembly, four sample databases,
+      and 30 graded challenges — from your first <code>SELECT</code> to window functions.
+      No server. No account. Just queries.</p>
       <div class="hero-actions">
-        <button class="btn btn-primary btn-lg" data-go="learn">📚 Start Learning</button>
-        <button class="btn btn-primary btn-lg" data-go="practice">🧪 Practice SQL</button>
-        <button class="btn btn-secondary btn-lg" data-go="challenges">🏆 Challenges</button>
-        <button class="btn btn-secondary btn-lg" data-go="cheatsheet">📖 Cheat Sheet</button>
+        <button class="btn btn-primary btn-lg" data-go="learn">Start the course</button>
+        <button class="btn btn-primary btn-lg" data-go="practice">Open the workbench</button>
+        <button class="btn btn-secondary btn-lg" data-go="challenges">Take a challenge</button>
+        <button class="btn btn-secondary btn-lg" data-go="cheatsheet">Browse the field guide</button>
       </div>
       <div class="hero-path">
-        <h3>Your learning path</h3>
+        <h3>The route</h3>
         <ol class="path-steps">
           <li><button data-go="learn" data-topic="select">SELECT</button></li>
           <li><button data-go="learn" data-topic="where">WHERE</button></li>
           <li><button data-go="learn" data-topic="orderby">ORDER BY</button></li>
           <li><button data-go="learn" data-topic="groupby">GROUP BY</button></li>
           <li><button data-go="learn" data-topic="join">JOIN</button></li>
-          <li><button data-go="learn" data-topic="advanced">Advanced SQL</button></li>
+          <li><button data-go="learn" data-topic="advanced">Window functions &amp; CTEs</button></li>
         </ol>
       </div>
       <div id="hero-progress" class="hero-progress"></div>
@@ -183,6 +199,12 @@
 <!-- Modals / toasts -->
 <div id="modalRoot"></div>
 <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+
+<footer class="site-footer">
+  <span class="foot-mark">SQL·LAB</span>
+  <span>v1.0 — SQLite (WASM) runs locally; nothing you type leaves this tab.</span>
+  <span class="foot-dim">engines: sql.js 1.8 · editor: CodeMirror 5</span>
+</footer>
 
 <!-- SQL engine: sql.js (SQLite WASM) + CodeMirror -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>

@@ -279,6 +279,7 @@ export function initPractice() {
     onRun: () => runQuery(),
     getTables: getTablesForAutocomplete,
   });
+  if (!editor.getValue()) editor.setValue('-- type SQL here, then press ▶ Run Query (or Ctrl+Enter)\nSELECT first_name, salary\nFROM employees\nORDER BY salary DESC;');
   $('btnRun').addEventListener('click', runQuery);
   $('btnClear').addEventListener('click', () => editor.setValue(''));
   $('btnResetQuery').addEventListener('click', () => {

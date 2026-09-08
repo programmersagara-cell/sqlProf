@@ -1,6 +1,6 @@
-# 🗄️ SQL Lab
+# 🗄️ SQL·LAB
 
-**Learn • Practice • Challenges • Cheat Sheet** — an interactive SQL learning platform that runs **entirely in your browser**. No PHP, no MySQL, no Node server, no signup. Deploy it anywhere static files can be served (GitHub Pages, Netlify, Vercel, ...).
+**the in-browser query workbench** — an interactive SQL learning platform that runs **entirely in your browser**. No PHP, no MySQL, no Node server, no signup. Deploy it anywhere static files can be served (GitHub Pages, Netlify, Vercel, ...).
 
 ![SQL Lab](https://img.shields.io/badge/SQL-Practice%20Lab-4f8cff) ![static](https://img.shields.io/badge/hosting-GitHub%20Pages-success)
 
