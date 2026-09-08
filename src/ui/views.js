@@ -1,7 +1,7 @@
 // Learn, Cheat Sheet, Challenges list and Progress views.
 import { LESSONS } from '../lessons/lessons.js';
 import { CHEATSHEET } from '../cheatsheet/cheatsheet.js';
-import { CHALLENGES, challengeNumber, LEVEL_LABELS } from '../challenges/index.js';
+import { CHALLENGES, challengeNumber, LEVELS, LEVEL_LABELS } from '../challenges/index.js';
 import * as engine from '../engine/sqlEngine.js';
 import { getProgress, BADGES, resetProgress, countByLevel, overallPercent } from '../progress/progress.js';
 import { escapeHtml, toast, confirmModal, resultTable } from './helpers.js';
@@ -147,8 +147,9 @@ export function renderChallengeGrid() {
   const tabs = document.querySelectorAll('.level-tab');
   tabs.forEach((t) => t.classList.toggle('active', t.dataset.level === currentLevel));
   const prog = getProgress();
-  const list = CHALLENGES.filter((c) => currentLevel === 'all' || c.level === currentLevel);
-  $('challengeGrid').innerHTML = list.map((c) => {
+  const levels = currentLevel === 'all' ? LEVELS : [currentLevel];
+
+  const card = (c) => {
     const done = prog.completed[c.id] && prog.completed[c.id].completedAt;
     return `
     <button class="challenge-card ${done ? 'done' : ''}" data-challenge="${c.id}">
@@ -160,7 +161,30 @@ export function renderChallengeGrid() {
       <p>${escapeHtml(c.description)}</p>
       <span class="cc-db">🗄 ${escapeHtml(c.db)}</span>
     </button>`;
-  }).join('');
+  };
+
+  let html = '';
+  for (const level of levels) {
+    const levelList = CHALLENGES.filter((c) => c.level === level);
+    if (!levelList.length) continue;
+    const doneCount = levelList.filter((c) => prog.completed[c.id] && prog.completed[c.id].completedAt).length;
+    // Group this level's challenges by database.
+    const dbs = [...new Set(levelList.map((c) => c.db))];
+    const dbGroups = dbs.map((db) => `
+      <div class="cg-db-group">
+        <div class="cg-db-label">🗄 ${escapeHtml(db)} <span class="cg-db-count">${levelList.filter((c) => c.db === db).length}</span></div>
+        <div class="challenge-grid">${levelList.filter((c) => c.db === db).map(card).join('')}</div>
+      </div>`).join('');
+    html += `
+      <section class="cg-level-section">
+        <div class="cg-level-head level-${level}">
+          <h3 class="cg-level-title">${LEVEL_LABELS[level]}</h3>
+          <span class="cg-level-count">${doneCount}/${levelList.length} solved</span>
+        </div>
+        ${dbGroups}
+      </section>`;
+  }
+  $('challengeGrid').innerHTML = html;
   $('challengeGrid').querySelectorAll('.challenge-card').forEach((card) =>
     card.addEventListener('click', () => {
       window.dispatchEvent(new CustomEvent('sqllab:challenge', { detail: card.dataset.challenge }));

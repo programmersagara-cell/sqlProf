@@ -10,7 +10,7 @@
 - **4 sample databases** — `company_db` (employees, departments, projects, salaries, employee_projects), `school_db`, `shop_db`, `library_db`. Switch them from the Database panel.
 - **Database explorer** — click any table to see its structure (columns, types, primary keys, nullability) and its data.
 - **Professional SQL editor** — syntax highlighting, line numbers, autocomplete (`Ctrl+Space` and while typing), `Ctrl+Enter` to run, error/success highlighting.
-- **30 challenges across 3 levels** — Beginner (SELECT → BETWEEN), Intermediate (aggregates, GROUP BY, HAVING, JOINs), Advanced (subqueries, CASE, CTEs, UNION, window functions, DML).
+- **45 challenges across 3 levels and 4 databases** — Beginner (SELECT → BETWEEN), Intermediate (aggregates, GROUP BY, HAVING, JOINs), Advanced (subqueries, CASE, CTEs, UNION, window functions, DML), plus dedicated challenge sets for `school_db`, `shop_db` and `library_db`.
 - **Result-based validation** — your answer is never compared as text. The app runs the official solution and compares *datasets*, so any logically equivalent query passes.
 - **Progressive hints & solutions** — 3 hints per challenge before the full answer is revealed.
 - **Learning mode** — structured lessons (SELECT, WHERE, ORDER BY, GROUP BY, JOIN, Advanced) with "Try it yourself" mini-editors and common-mistake callouts.
@@ -66,7 +66,7 @@ sqlProf/
     │   ├── databases.js        # Database registry
     │   ├── companyDb.js        # company_db schema + seed data
     │   └── otherDbs.js         # school_db, shop_db, library_db
-    ├── challenges/             # 30 challenges (beginner/intermediate/advanced)
+    ├── challenges/             # 45 challenges (company/school/shop/library sets)
     ├── lessons/lessons.js      # Learning mode topics
     ├── cheatsheet/cheatsheet.js# Cheat sheet entries
     ├── validation/validator.js # Result-set comparison + friendly errors

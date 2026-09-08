@@ -30,8 +30,8 @@ const { CHEATSHEET } = await import('../src/cheatsheet/cheatsheet.js');
 const { getProgress, recordAttempt, resetProgress } = await import('../src/progress/progress.js');
 
 // Static data checks
-t('there are 30 challenges', () => eq(CHALLENGES.length, 30));
-t('challenge ids unique', () => eq(new Set(CHALLENGES.map(c => c.id)).size, 30));
+t('there are 45 challenges', () => eq(CHALLENGES.length, 45));
+t('challenge ids unique', () => eq(new Set(CHALLENGES.map(c => c.id)).size, 45));
 t('every challenge has 3 hints + solution', () => {
   for (const c of CHALLENGES) {
     if (c.hints.length < 1) throw new Error(c.id + ' no hints');
@@ -65,6 +65,21 @@ t('other DB schemas execute', () => {
     const x = new SQL.Database();
     x.exec(d.schema);
     x.close();
+  }
+});
+
+t('every challenge solution runs against its own database', () => {
+  const dbs = {};
+  for (const c of CHALLENGES) {
+    if (!dbs[c.db]) {
+      const def = DATABASES.find((d) => d.id === c.db);
+      if (!def) throw new Error('unknown db: ' + c.db);
+      const x = new SQL.Database();
+      x.exec(def.schema);
+      dbs[c.db] = x;
+    }
+    const r = dbs[c.db].exec(c.solution);
+    if (!r || !r[0] || !r[0].rows.length) throw new Error(c.id + ': solution returns no rows');
   }
 });
 
