@@ -151,6 +151,10 @@ export function openChallenge(id) {
     <p><strong>Task:</strong> ${escapeHtml(ch.instructions)}</p>
     <p class="small"><strong>Example syntax:</strong></p>
     <pre class="code-inline"><code>${escapeHtml(ch.example)}</code></pre>`;
+  // Clear the result panel so results from the previous challenge don't linger.
+  $('resultBody').innerHTML = '<p class="muted">Run your query to see the result.</p>';
+  $('resultMeta').textContent = '';
+  $('editorStatus').textContent = 'Ready';
   $('hintBox').hidden = true;
   $('hintBox').innerHTML = '';
   showTableForChallenge(ch);

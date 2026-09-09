@@ -1,0 +1,6 @@
+# Prevent stale JavaScript/CSS modules during development.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|mjs|css)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
