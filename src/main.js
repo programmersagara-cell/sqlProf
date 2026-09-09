@@ -75,6 +75,18 @@ function initNav() {
 
 async function boot() {
   initTheme();
+  // Keep the loading screen visible for a minimum time so it doesn't just flash by.
+  const SPLASH_MIN_MS = 1400;
+  const splashShownAt = Date.now();
+  const splash = document.getElementById('loadingScreen');
+  const hideSplash = () => {
+    if (!splash) return;
+    const wait = Math.max(0, SPLASH_MIN_MS - (Date.now() - splashShownAt));
+    setTimeout(() => {
+      splash.classList.add('done');
+      setTimeout(() => splash.remove(), 450);
+    }, wait);
+  };
   initNav();
   initChallengeTabs();
   renderLessonList();
@@ -96,12 +108,7 @@ async function boot() {
         <p class="muted">The SQL engine (WASM) is loaded from a CDN — check your internet connection and reload the page.</p>
       </div>`;
   } finally {
-    // Remove the loading screen once the app is ready (or failed to start).
-    const splash = document.getElementById('loadingScreen');
-    if (splash) {
-      splash.classList.add('done');
-      setTimeout(() => splash.remove(), 450);
-    }
+    hideSplash();
   }
 }
 
