@@ -5,9 +5,9 @@ import * as editor from '../editor/editor.js';
 import { validateAttempt } from '../validation/validator.js';
 import { recordAttempt, getProgress } from '../progress/progress.js';
 import { addHistory, getHistory, deleteHistory, clearHistory } from '../history/history.js';
-import { getChallenge, challengeNumber, LEVEL_LABELS } from '../challenges/index.js';
+import { CHALLENGES, getChallenge, challengeNumber, LEVEL_LABELS } from '../challenges/index.js';
 import { DATABASES } from '../data/databases.js';
-import { escapeHtml, toast, confirmModal, resultTable, barChart } from './helpers.js';
+import { escapeHtml, toast, confirmModal, choiceModal, resultTable, barChart } from './helpers.js';
 
 let currentChallenge = null;
 let hintsShown = 0;
@@ -201,6 +201,23 @@ function celebrate(rec) {
       ${badges}
     </div>`);
   refreshXpPill();
+
+  // Offer to jump to the next challenge (only when one exists).
+  const idx = CHALLENGES.indexOf(currentChallenge);
+  const next = idx >= 0 ? CHALLENGES[idx + 1] : null;
+  if (next) {
+    choiceModal({
+      title: '🎉 Challenge Complete!',
+      body: `<p>Nice work — you earned <strong>+${rec.xpGained} XP</strong>!</p>
+        ${badges}
+        <p>Up next: <strong>#${challengeNumber(next)} ${escapeHtml(next.title)}</strong>
+        <span class="cb-level level-${next.level}">${LEVEL_LABELS[next.level]}</span></p>`,
+      choices: [
+        { label: 'Stay here', className: 'btn-secondary' },
+        { label: `Next challenge →`, className: 'btn-primary', autofocus: true, onClick: () => openChallenge(next.id) },
+      ],
+    });
+  }
 }
 
 /* ---------------- Hints / solution ---------------- */

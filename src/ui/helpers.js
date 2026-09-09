@@ -43,6 +43,36 @@ export function confirmModal({ title, body, okText = 'OK', danger = false, onCon
   overlay.querySelector('[data-act="ok"]').focus();
 }
 
+/** Modal with multiple choices. choices: [{ label, className, onClick, autofocus }] */
+export function choiceModal({ title, body, choices }) {
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+      <div class="modal">
+        <h3>${escapeHtml(title)}</h3>
+        <p>${body}</p>
+        <div class="modal-actions">
+          ${choices.map((c, i) =>
+            `<button class="btn ${c.className || 'btn-secondary'}" data-act="${i}">${escapeHtml(c.label)}</button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  const overlay = root.firstElementChild;
+  const close = () => (root.innerHTML = '');
+  overlay.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-act]');
+    if (!btn) { if (e.target === overlay) close(); return; }
+    const choice = choices[+btn.dataset.act];
+    close();
+    choice.onClick && choice.onClick();
+  });
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+  });
+  const auto = choices.findIndex((c) => c.autofocus);
+  overlay.querySelector(`[data-act="${auto === -1 ? 0 : auto}"]`).focus();
+}
+
 /** Render a dataset as an HTML table (sanitized). */
 export function resultTable(columns, rows, maxRows = 200) {
   const shown = rows.slice(0, maxRows);
