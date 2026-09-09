@@ -505,20 +505,107 @@ main { padding: 18px; }
 
 /* ============ Responsive ============ */
 @media (max-width: 1100px) {
-  .workspace { grid-template-columns: 1fr 1.4fr; grid-template-rows: auto 1fr; height: auto; }
+  .workspace { grid-template-columns: 1fr 1.4fr; grid-template-rows: auto 1fr; height: auto; min-height: 0; }
   .panel-db { grid-column: 1 / -1; max-height: 320px; }
   .panel-editor { min-height: 320px; }
   .panel-result { grid-column: 1 / -1; max-height: 380px; }
 }
+
 @media (max-width: 760px) {
-  .workspace { grid-template-columns: 1fr; }
-  .panel-db, .panel-result { grid-column: auto; max-height: 340px; }
-  #view-learn, .cheatsheet-layout { flex-direction: column; }
-  .side-list { width: 100%; }
-  .lesson-content, .cheat-body { max-height: none; }
-  .topnav { margin-left: 0; width: 100%; order: 3; }
-  .hero h2 { font-size: 1.7em; }
   main { padding: 10px; }
+  .view-workspace { padding: 8px; }
+
+  /* Topbar: brand row + horizontally scrollable nav */
+  .topbar { gap: 8px; padding: 8px 10px; }
+  .topnav {
+    margin-left: 0; width: 100%; order: 3;
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding-bottom: 2px;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .nav-btn { flex: 0 0 auto; padding: 9px 14px; font-size: 0.95em; }
+  .topbar h1 { font-size: 1em; letter-spacing: 2px; }
+
+  /* Workspace: everything stacks vertically, panels get fixed usable heights */
+  .workspace { grid-template-columns: 1fr; gap: 10px; height: auto; min-height: 0; }
+  .panel-db, .panel-editor, .panel-result { grid-column: auto; max-height: none; }
+  .panel-db { max-height: 300px; }
+  .panel-db .db-tree { max-height: 110px; }
+  .panel-editor { min-height: 0; }
+  .panel-editor .editor-wrap { min-height: 220px; }
+  .panel-editor .CodeMirror { height: 220px; }
+  .panel-result .result-body { max-height: 420px; }
+  .editor-actions { flex-wrap: wrap; gap: 8px; }
+  .btn-run { flex: 1; }
+  .history-panel { max-height: 260px; }
+  .history-item code { white-space: normal; word-break: break-all; }
+
+  /* Challenge banner + code blocks wrap on narrow screens */
+  .challenge-banner { padding: 10px 12px; }
+  .code-inline, .hint-item.solution pre, .result-error pre, .result-error code { font-size: 0.85em; }
+
+  /* Learn / cheat sheet: side list becomes a compact strip */
+  #view-learn, .cheatsheet-layout { flex-direction: column; }
+  .side-list { width: 100%; max-height: 200px; }
+  .lesson-content, .cheat-body { max-height: none; padding: 14px; }
+
+  /* Hero + console */
+  .hero { margin: 2vh auto; }
+  .hero h2 { font-size: 1.5em; }
+  .hero-sub { font-size: 0.98em; }
+  .hero-actions .btn { flex: 1 1 45%; text-align: center; }
+  .console-body { font-size: 0.72em; padding: 12px; }
+
+  /* Challenges grid */
+  .challenge-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .level-tab { padding: 7px 13px; font-size: 0.88em; }
+
+  /* Progress */
+  .progress-wrap { padding: 14px; }
+  .xp-line { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  .badges { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .track-row { gap: 8px; }
+  .track-label { flex: 0 0 auto; min-width: 0; font-size: 0.85em; }
+  .track-pct { flex: 0 0 auto; font-size: 0.78em; }
+
+  /* Tables & charts scroll instead of overflowing */
+  .data-table { font-size: 0.82em; }
+  .table-scroll { -webkit-overflow-scrolling: touch; }
+  .bar-label { width: 80px; }
+
+  /* Modals + toasts */
+  .modal-overlay { padding: 12px; }
+  .modal { padding: 16px; }
+  .modal-actions { flex-wrap: wrap; }
+  .modal-actions .btn { flex: 1 1 45%; }
+  .toast-root { left: 12px; right: 12px; bottom: 12px; }
+  .toast { max-width: none; }
+}
+
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+  .tagline { display: none; }
+  .topbar h1 { font-size: 0.92em; }
+  .icon-btn { padding: 8px 12px; }
+  .hero h2 { font-size: 1.3em; }
+  .hero-actions .btn { flex: 1 1 100%; }
+  .challenge-grid { grid-template-columns: 1fr; }
+  .badges { grid-template-columns: 1fr; }
+  .cb-info { gap: 8px; }
+  .cb-desc { font-size: 0.88em; }
+  .track-row { flex-wrap: wrap; }
+  .track-label { flex: 1 1 100%; }
+  .track-bar { flex: 1 1 100%; order: 3; }
+  .track-pct { flex: 1 1 auto; text-align: left; }
+  .db-inspect { padding: 8px 10px; }
+  .result-body { padding: 8px 10px; }
+}
+
+/* Phone landscape: keep panels compact */
+@media (max-width: 900px) and (orientation: landscape) {
+  .panel-db { max-height: 240px; }
+  .panel-editor .CodeMirror { height: 200px; }
+  .panel-result .result-body { max-height: 300px; }
 }
 
 
