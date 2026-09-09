@@ -13,6 +13,18 @@
 <body>
 <a href="#main" class="skip-link">Skip to main content</a>
 
+<!-- Loading screen (removed once the engine has booted) -->
+<div id="loadingScreen" class="loading-screen" role="status" aria-live="polite">
+  <svg class="loading-logo" width="64" height="64" viewBox="0 0 32 32" aria-hidden="true">
+    <rect x="1.5" y="1.5" width="29" height="29" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <path d="M8 11l6 5-6 5" fill="none" stroke="var(--signal)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="16" y1="22" x2="24" y2="22" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>
+  </svg>
+  <h2 class="loading-title">Entering SQL·Lab</h2>
+  <div class="loading-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+  <p class="loading-sub">Starting the in-browser SQL engine…</p>
+</div>
+
 <header class="topbar">
   <div class="topbar-brand">
     <svg class="logo" width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
@@ -214,6 +226,6 @@ WHERE  salary &gt; 60000;</span>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/sql-hint.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 
-<script type="module" src="src/main.js?v=3"></script>
+<script type="module" src="src/main.js?v=4"></script>
 </body>
 </html>

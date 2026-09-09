@@ -1,7 +1,7 @@
 // SQL Lab — application bootstrap, navigation and theme handling.
 import { initEngine, loadDatabase } from './engine/sqlEngine.js';
 import * as editor from './editor/editor.js';
-import { initPractice, renderDbExplorer, openChallenge, selectTable, refreshXpPill } from './ui/practice.js';
+import { initPractice, renderDbExplorer, openChallenge, selectTable, refreshXpPill, resetResultPanel } from './ui/practice.js';
 import {
   renderLessonList, renderLesson, renderCheatSheet, renderChallengeGrid,
   initChallengeTabs, renderProgress, renderHeroProgress,
@@ -44,7 +44,7 @@ function showView(name) {
   if (name === 'challenges') { import('./ui/views.js').then((m) => m.renderChallengeGrid()); }
   if (name === 'progress') { import('./ui/views.js').then((m) => m.renderProgress()); }
   if (name === 'welcome') { import('./ui/views.js').then((m) => m.renderHeroProgress()); }
-  if (name === 'practice') editor.focus();
+  if (name === 'practice') { resetResultPanel(); editor.focus(); }
   try { location.hash = name; } catch { /* ignore */ }
 }
 
@@ -95,6 +95,13 @@ async function boot() {
         <p>${err.message || 'Unknown error'}</p>
         <p class="muted">The SQL engine (WASM) is loaded from a CDN — check your internet connection and reload the page.</p>
       </div>`;
+  } finally {
+    // Remove the loading screen once the app is ready (or failed to start).
+    const splash = document.getElementById('loadingScreen');
+    if (splash) {
+      splash.classList.add('done');
+      setTimeout(() => splash.remove(), 450);
+    }
   }
 }
 

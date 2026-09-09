@@ -14,6 +14,13 @@ let hintsShown = 0;
 let selectedTable = null;
 const $ = (id) => document.getElementById(id);
 
+/** Reset the Result panel to its neutral placeholder. */
+export function resetResultPanel() {
+  $('resultBody').innerHTML = '<p class="muted">Run a query to see results here. Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to execute.</p>';
+  $('resultMeta').textContent = '';
+  $('editorStatus').textContent = 'Ready';
+}
+
 /* ---------------- Database explorer ---------------- */
 
 export function renderDbExplorer() {
@@ -152,9 +159,7 @@ export function openChallenge(id) {
     <p class="small"><strong>Example syntax:</strong></p>
     <pre class="code-inline"><code>${escapeHtml(ch.example)}</code></pre>`;
   // Clear the result panel so results from the previous challenge don't linger.
-  $('resultBody').innerHTML = '<p class="muted">Run your query to see the result.</p>';
-  $('resultMeta').textContent = '';
-  $('editorStatus').textContent = 'Ready';
+  resetResultPanel();
   $('hintBox').hidden = true;
   $('hintBox').innerHTML = '';
   showTableForChallenge(ch);
