@@ -210,9 +210,26 @@ export function renderProgress() {
     return `<tr><td>${label}</td><td>${n} / ${total}</td>
       <td><div class="mini-bar"><div style="width:${pct}%"></div></div></td></tr>`;
   };
+  const track = (label, key) => {
+    const n = countByLevel(key);
+    const total = levelTotal(key);
+    const pct = total ? Math.round((n / total) * 100) : 0;
+    return `<div class="track-row">
+      <span class="track-label">${label}</span>
+      <div class="track-bar"><div style="width:${pct}%"></div></div>
+      <span class="track-pct">${pct}% complete</span>
+    </div>`;
+  };
   $('progressBody').innerHTML = `
     <div class="progress-wrap">
       <h2>SQL Progress</h2>
+      <div class="track-card">
+        <h3 class="track-title">Track completion</h3>
+        ${track('🟢 Fundamentals', 'beginner')}
+        ${track('🟡 Joins & Aggregates', 'intermediate')}
+        ${track('🔴 Advanced SQL', 'advanced')}
+        ${track('🐛 Bug Hunt', 'debug')}
+      </div>
       <div class="xp-line"><strong>⚡ ${p.xp} XP</strong> · 🔥 Best streak: ${p.bestStreak} · Current streak: ${p.streak} ·
         Attempts: ${p.attempts} · Correct: ${p.correct} · Hints used: ${p.hintsUsed}</div>
       <table class="data-table progress-table">
@@ -221,6 +238,7 @@ export function renderProgress() {
           ${row('🟢 Beginner', 'beginner')}
           ${row('🟡 Intermediate', 'intermediate')}
           ${row('🔴 Advanced', 'advanced')}
+          ${row('🐛 Debugging', 'debug')}
         </tbody>
       </table>
       <h3>Overall Progress</h3>
@@ -263,7 +281,7 @@ export function renderHeroProgress() {
   $('hero-progress').innerHTML = `
     <div class="hero-progress-inner">
       <span>⚡ ${p.xp} XP</span>
-      <span>🏆 ${Object.keys(p.completed).length} / ${CHALLENGE_TOTAL} challenges</span>
+      <span>🏆 ${Object.values(p.completed).filter((r) => r && r.completedAt).length} / ${CHALLENGE_TOTAL} challenges</span>
       <span>🔥 streak ${p.streak}</span>
       <div class="mini-bar wide"><div style="width:${pct}%"></div></div>
     </div>`;

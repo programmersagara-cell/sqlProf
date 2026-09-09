@@ -26,9 +26,14 @@ export const BADGES = [
   { id: 'xp2500', name: 'XP Master', icon: '👑', desc: 'Earn 2500 XP' },
   { id: 'no-hints', name: 'Purist', icon: '🧠', desc: 'Complete a challenge with no hints' },
   { id: 'one-shot', name: 'One Shot', icon: '🎯', desc: 'Solve a challenge on your first attempt, no hints' },
+  { id: 'flawless', name: 'Flawless Victory', icon: '🏅', desc: 'Solve 5 challenges with zero wrong attempts' },
+  { id: 'hint-all', name: 'Hint Hoarder', icon: '🧩', desc: 'Use every available hint and still solve the challenge' },
+  { id: 'hint-habit', name: 'Hint Regular', icon: '💊', desc: 'Solve 5 different challenges using at least one hint each' },
   { id: 'db-explorer', name: 'Globetrotter', icon: '🗺️', desc: 'Solve at least one challenge in every database' },
   { id: 'halfway', name: 'Halfway There', icon: '🌗', desc: 'Complete half of all challenges' },
   { id: 'completionist', name: 'Grand SQL Master', icon: '🏆', desc: 'Complete every single challenge' },
+  { id: 'bug-hunter', name: 'Bug Hunter', icon: '🐛', desc: 'Complete your first debugging challenge' },
+  { id: 'debug-done', name: 'Exterminator', icon: '🕵️', desc: 'Complete every debugging challenge' },
 ];
 
 /** Number of challenges per level (derived from the registry). */
@@ -36,7 +41,7 @@ function levelTotal(level) {
   return CHALLENGES.filter((c) => c.level === level).length;
 }
 
-const XP_PER_LEVEL = { beginner: 100, intermediate: 150, advanced: 250 };
+const XP_PER_LEVEL = { beginner: 100, intermediate: 150, advanced: 250, debug: 200 };
 
 export function loadProgress() {
   try {
@@ -79,9 +84,17 @@ export function recordAttempt(challenge, status, hintsUsed) {
 
   const rec = progress.completed[challenge.id];
   const isNew = !rec || !rec.completedAt;
+  if (status === 'incorrect' || status === 'error') {
+    // Track failed attempts per challenge so "perfect run" badges are possible.
+    const r = progress.completed[challenge.id] || { attempts: 0, hintsUsed: 0, completedAt: null };
+    r.attempts += 1;
+    if (hintsUsed) r.hintsUsed = hintsUsed;
+    progress.completed[challenge.id] = r;
+  }
   if (status === 'correct' && isNew) {
+    const failedAttempts = rec ? rec.attempts : 0;
     progress.completed[challenge.id] = {
-      attempts: (rec ? rec.attempts : 0) + 1,
+      attempts: failedAttempts + 1,
       hintsUsed,
       completedAt: Date.now(),
     };
@@ -91,7 +104,12 @@ export function recordAttempt(challenge, status, hintsUsed) {
     out.xpGained = xp;
     const b1 = unlock('first-blood'); if (b1) out.badges.push(b1);
     if (hintsUsed === 0) { const b = unlock('no-hints'); if (b) out.badges.push(b); }
-    if (hintsUsed === 0 && rec && rec.attempts === 0) { const b = unlock('one-shot'); if (b) out.badges.push(b); }
+    if (hintsUsed === 0 && failedAttempts === 0) { const b = unlock('one-shot'); if (b) out.badges.push(b); }
+    if (challenge.hints && challenge.hints.length && hintsUsed >= challenge.hints.length) { const b = unlock('hint-all'); if (b) out.badges.push(b); }
+    const perfectSolves = perfectSolveCount();
+    if (perfectSolves >= 5) { const b = unlock('flawless'); if (b) out.badges.push(b); }
+    const hintedSolves = hintedSolveCount();
+    if (hintedSolves >= 5) { const b = unlock('hint-habit'); if (b) out.badges.push(b); }
     if (progress.streak >= 5) { const b = unlock('streak5'); if (b) out.badges.push(b); }
     if (progress.streak >= 10) { const b = unlock('streak10'); if (b) out.badges.push(b); }
     if (progress.xp >= 1000) { const b = unlock('xp1000'); if (b) out.badges.push(b); }
@@ -99,6 +117,8 @@ export function recordAttempt(challenge, status, hintsUsed) {
     if (countByLevel('beginner') >= levelTotal('beginner')) { const b = unlock('beginner-done'); if (b) out.badges.push(b); }
     if (countByLevel('intermediate') >= levelTotal('intermediate')) { const b = unlock('intermediate-done'); if (b) out.badges.push(b); }
     if (countByLevel('advanced') >= levelTotal('advanced')) { const b = unlock('advanced-done'); if (b) out.badges.push(b); }
+    if (challenge.level === 'debug') { const b = unlock('bug-hunter'); if (b) out.badges.push(b); }
+    if (levelTotal('debug') > 0 && countByLevel('debug') >= levelTotal('debug')) { const b = unlock('debug-done'); if (b) out.badges.push(b); }
     const solvedDbs = new Set(CHALLENGES.filter((c) => progress.completed[c.id] && progress.completed[c.id].completedAt).map((c) => c.db));
     if (solvedDbs.size >= new Set(CHALLENGES.map((c) => c.db)).size) { const b = unlock('db-explorer'); if (b) out.badges.push(b); }
     const solved = Object.keys(progress.completed).filter((id) => progress.completed[id] && progress.completed[id].completedAt).length;
@@ -109,13 +129,23 @@ export function recordAttempt(challenge, status, hintsUsed) {
   return out;
 }
 
+/** Challenges solved with zero wrong attempts (attempts === 1). */
+function perfectSolveCount() {
+  return Object.values(progress.completed).filter((r) => r && r.completedAt && r.attempts === 1).length;
+}
+
+/** Different challenges solved using at least one hint. */
+function hintedSolveCount() {
+  return Object.values(progress.completed).filter((r) => r && r.completedAt && (r.hintsUsed || 0) > 0).length;
+}
+
 export function countByLevel(level) {
   const done = new Set(Object.keys(progress.completed).filter((id) => progress.completed[id] && progress.completed[id].completedAt));
   return CHALLENGES.filter((c) => c.level === level && done.has(c.id)).length;
 }
 
 export function overallPercent(total) {
-  const done = Object.keys(progress.completed).length;
+  const done = Object.values(progress.completed).filter((r) => r && r.completedAt).length;
   return total ? Math.round((done / total) * 100) : 0;
 }
 

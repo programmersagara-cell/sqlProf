@@ -323,6 +323,7 @@ main { padding: 18px; }
 .level-beginner { background: rgba(63,185,80,0.18); color: var(--green); }
 .level-intermediate { background: rgba(210,153,34,0.18); color: var(--yellow); }
 .level-advanced { background: rgba(248,81,73,0.18); color: var(--red); }
+.level-debug { background: rgba(137,87,229,0.18); color: #a78bfa; }
 .cb-status.ok { color: var(--green); font-weight: 600; }
 .cb-status.fail { color: var(--red); font-weight: 600; }
 .cb-desc { color: var(--muted); font-size: 0.92em; margin: 8px 0; }
@@ -410,6 +411,8 @@ main { padding: 18px; }
 .cg-level-head.level-intermediate .cg-level-title { color: var(--yellow); }
 .cg-level-head.level-advanced { border-color: var(--red); }
 .cg-level-head.level-advanced .cg-level-title { color: var(--red); }
+.cg-level-head.level-debug { border-color: #8957e5; }
+.cg-level-head.level-debug .cg-level-title { color: #a78bfa; }
 .cg-db-group { margin-top: 14px; }
 .cg-db-label { font-size: 0.85em; font-weight: 600; color: var(--muted); margin: 0 0 8px; }
 .cg-db-count {
@@ -461,6 +464,22 @@ main { padding: 18px; }
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.08); opacity: 0.75; }
 }
+
+/* Track completion card */
+.track-card {
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 18px;
+}
+.track-title { margin: 0 0 12px; }
+.track-row { display: flex; align-items: center; gap: 14px; padding: 9px 0; }
+.track-row + .track-row { border-top: 1px solid var(--border); }
+.track-label { flex: 0 0 180px; font-size: 0.92em; }
+.track-bar {
+  flex: 1; height: 8px; background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 99px; overflow: hidden;
+}
+.track-bar > div { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
+.track-pct { flex: 0 0 90px; text-align: right; color: var(--muted); font-size: 0.85em; }
 
 /* Modal + toast */
 .modal-overlay {

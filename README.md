@@ -10,13 +10,13 @@
 - **4 sample databases** — `company_db` (employees, departments, projects, salaries, employee_projects), `school_db`, `shop_db`, `library_db`. Switch them from the Database panel.
 - **Database explorer** — click any table to see its structure (columns, types, primary keys, nullability) and its data.
 - **Professional SQL editor** — syntax highlighting, line numbers, autocomplete (`Ctrl+Space` and while typing), `Ctrl+Enter` to run, error/success highlighting.
-- **45 challenges across 3 levels and 4 databases** — Beginner (SELECT → BETWEEN), Intermediate (aggregates, GROUP BY, HAVING, JOINs), Advanced (subqueries, CASE, CTEs, UNION, window functions, DML), plus dedicated challenge sets for `school_db`, `shop_db` and `library_db`.
+- **51 challenges across 3 levels + a 🐛 Bug Hunt debugging section and 4 databases** — Beginner (SELECT → BETWEEN), Intermediate (aggregates, GROUP BY, HAVING, JOINs), Advanced (subqueries, CASE, CTEs, UNION, window functions, DML), dedicated challenge sets for `school_db`, `shop_db` and `library_db`, plus real-world broken queries to diagnose and fix.
 - **Result-based validation** — your answer is never compared as text. The app runs the official solution and compares *datasets*, so any logically equivalent query passes.
 - **Progressive hints & solutions** — 3 hints per challenge before the full answer is revealed.
 - **Learning mode** — structured lessons (SELECT, WHERE, ORDER BY, GROUP BY, JOIN, Advanced) with "Try it yourself" mini-editors and common-mistake callouts.
 - **Interactive cheat sheet** — 25+ topics with syntax, examples, common mistakes and "when to use".
 - **Query history** — the last 50 queries, saved in localStorage; reopen or delete individual entries.
-- **Progress + gamification** — XP, streaks, 13 unlockable badges, per-level progress bars. All stored locally.
+- **Progress + gamification** — XP, streaks, 18 unlockable badges, per-level progress bars. All stored locally.
 - **Dark / light mode** — remembered between visits.
 - **Responsive** — three-panel desktop workspace gracefully reflows to a stacked layout on tablets and phones.
 - **Accessible** — semantic HTML, ARIA labels, visible focus states, keyboard-navigable history and navigation.
