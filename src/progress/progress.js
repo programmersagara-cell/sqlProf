@@ -1,5 +1,6 @@
 // Progress tracking + gamification, persisted in localStorage.
 // No account/login required.
+import { CHALLENGES } from '../challenges/index.js';
 
 const KEY = 'sqllab.progress.v1';
 
@@ -20,9 +21,20 @@ export const BADGES = [
   { id: 'intermediate-done', name: 'Join Journeyman', icon: '🔗', desc: 'Finish all Intermediate challenges' },
   { id: 'advanced-done', name: 'SQL Sensei', icon: '🥋', desc: 'Finish all Advanced challenges' },
   { id: 'streak5', name: 'On Fire', icon: '🔥', desc: '5 correct answers in a row' },
+  { id: 'streak10', name: 'Unstoppable', icon: '⚡', desc: '10 correct answers in a row' },
   { id: 'xp1000', name: 'XP Collector', icon: '💎', desc: 'Earn 1000 XP' },
+  { id: 'xp2500', name: 'XP Master', icon: '👑', desc: 'Earn 2500 XP' },
   { id: 'no-hints', name: 'Purist', icon: '🧠', desc: 'Complete a challenge with no hints' },
+  { id: 'one-shot', name: 'One Shot', icon: '🎯', desc: 'Solve a challenge on your first attempt, no hints' },
+  { id: 'db-explorer', name: 'Globetrotter', icon: '🗺️', desc: 'Solve at least one challenge in every database' },
+  { id: 'halfway', name: 'Halfway There', icon: '🌗', desc: 'Complete half of all challenges' },
+  { id: 'completionist', name: 'Grand SQL Master', icon: '🏆', desc: 'Complete every single challenge' },
 ];
+
+/** Number of challenges per level (derived from the registry). */
+function levelTotal(level) {
+  return CHALLENGES.filter((c) => c.level === level).length;
+}
 
 const XP_PER_LEVEL = { beginner: 100, intermediate: 150, advanced: 250 };
 
@@ -79,18 +91,27 @@ export function recordAttempt(challenge, status, hintsUsed) {
     out.xpGained = xp;
     const b1 = unlock('first-blood'); if (b1) out.badges.push(b1);
     if (hintsUsed === 0) { const b = unlock('no-hints'); if (b) out.badges.push(b); }
+    if (hintsUsed === 0 && rec && rec.attempts === 0) { const b = unlock('one-shot'); if (b) out.badges.push(b); }
     if (progress.streak >= 5) { const b = unlock('streak5'); if (b) out.badges.push(b); }
+    if (progress.streak >= 10) { const b = unlock('streak10'); if (b) out.badges.push(b); }
     if (progress.xp >= 1000) { const b = unlock('xp1000'); if (b) out.badges.push(b); }
-    if (countByLevel('beginner') >= 10) { const b = unlock('beginner-done'); if (b) out.badges.push(b); }
-    if (countByLevel('intermediate') >= 10) { const b = unlock('intermediate-done'); if (b) out.badges.push(b); }
-    if (countByLevel('advanced') >= 10) { const b = unlock('advanced-done'); if (b) out.badges.push(b); }
+    if (progress.xp >= 2500) { const b = unlock('xp2500'); if (b) out.badges.push(b); }
+    if (countByLevel('beginner') >= levelTotal('beginner')) { const b = unlock('beginner-done'); if (b) out.badges.push(b); }
+    if (countByLevel('intermediate') >= levelTotal('intermediate')) { const b = unlock('intermediate-done'); if (b) out.badges.push(b); }
+    if (countByLevel('advanced') >= levelTotal('advanced')) { const b = unlock('advanced-done'); if (b) out.badges.push(b); }
+    const solvedDbs = new Set(CHALLENGES.filter((c) => progress.completed[c.id] && progress.completed[c.id].completedAt).map((c) => c.db));
+    if (solvedDbs.size >= new Set(CHALLENGES.map((c) => c.db)).size) { const b = unlock('db-explorer'); if (b) out.badges.push(b); }
+    const solved = Object.keys(progress.completed).filter((id) => progress.completed[id] && progress.completed[id].completedAt).length;
+    if (CHALLENGES.length && solved * 2 >= CHALLENGES.length) { const b = unlock('halfway'); if (b) out.badges.push(b); }
+    if (CHALLENGES.length && solved >= CHALLENGES.length) { const b = unlock('completionist'); if (b) out.badges.push(b); }
   }
   save(progress);
   return out;
 }
 
 export function countByLevel(level) {
-  return Object.keys(progress.completed).filter((id) => id.startsWith(level + '-')).length;
+  const done = new Set(Object.keys(progress.completed).filter((id) => progress.completed[id] && progress.completed[id].completedAt));
+  return CHALLENGES.filter((c) => c.level === level && done.has(c.id)).length;
 }
 
 export function overallPercent(total) {

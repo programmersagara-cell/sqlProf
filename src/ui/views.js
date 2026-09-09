@@ -5,7 +5,7 @@ import { CHALLENGES, challengeNumber, LEVELS, LEVEL_LABELS } from '../challenges
 import * as engine from '../engine/sqlEngine.js';
 import { getProgress, BADGES, resetProgress, countByLevel, overallPercent } from '../progress/progress.js';
 import { escapeHtml, toast, confirmModal, resultTable } from './helpers.js';
-import { CHALLENGE_TOTAL } from './counts.js';
+import { CHALLENGE_TOTAL, levelTotal } from './counts.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -205,8 +205,10 @@ export function renderProgress() {
   const bar = '█'.repeat(Math.round(pct / 10)) + '░'.repeat(10 - Math.round(pct / 10));
   const row = (label, key) => {
     const n = countByLevel(key);
-    return `<tr><td>${label}</td><td>${n} / 10</td>
-      <td><div class="mini-bar"><div style="width:${n * 10}%"></div></div></td></tr>`;
+    const total = levelTotal(key);
+    const pct = total ? Math.round((n / total) * 100) : 0;
+    return `<tr><td>${label}</td><td>${n} / ${total}</td>
+      <td><div class="mini-bar"><div style="width:${pct}%"></div></div></td></tr>`;
   };
   $('progressBody').innerHTML = `
     <div class="progress-wrap">

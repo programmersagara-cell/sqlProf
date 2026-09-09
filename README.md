@@ -16,7 +16,7 @@
 - **Learning mode** — structured lessons (SELECT, WHERE, ORDER BY, GROUP BY, JOIN, Advanced) with "Try it yourself" mini-editors and common-mistake callouts.
 - **Interactive cheat sheet** — 25+ topics with syntax, examples, common mistakes and "when to use".
 - **Query history** — the last 50 queries, saved in localStorage; reopen or delete individual entries.
-- **Progress + gamification** — XP, streaks, 7 unlockable badges, per-level progress bars. All stored locally.
+- **Progress + gamification** — XP, streaks, 13 unlockable badges, per-level progress bars. All stored locally.
 - **Dark / light mode** — remembered between visits.
 - **Responsive** — three-panel desktop workspace gracefully reflows to a stacked layout on tablets and phones.
 - **Accessible** — semantic HTML, ARIA labels, visible focus states, keyboard-navigable history and navigation.
